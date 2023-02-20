@@ -1,5 +1,10 @@
 // Build an apiRouter using express Router
 
+const express = require('express');
+const apiRouter = express.Router();
+
+const {getOpenReports} = require('../db');
+
 
 // Import the database adapter functions from the db
 
@@ -51,3 +56,9 @@
 
 
 // Export the apiRouter
+
+
+// set `req.user` if possible
+
+
+module.exports = apiRouter;

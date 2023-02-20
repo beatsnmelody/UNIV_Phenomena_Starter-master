@@ -25,13 +25,19 @@ async function getOpenReports() {
   try {
     // first load all of the reports which are open
     
-  const {rows:reports} = await client.query(`
+  const {rows : reports} = await client.query(`
   SELECT *
   FROM reports
+  WHERE isOpen=true
+  SELECT *
+  FROM comments 
+  WHERE reportId IN (isOpen);
   `)
 
     // then load the comments only for those reports, using a
     // WHERE "reportId" IN () clause
+
+
 
     
     // then, build two new properties on each report:
@@ -40,9 +46,13 @@ async function getOpenReports() {
     // .isExpired if the expiration date is before now
     //    you can use Date.parse(report.expirationDate) < new Date()
     // also, remove the password from all reports
+    const data = report.map((r) =>{
+      r.comments =  [];
+      r.isExpired = date.parse < new Date();
+ })
 
 
-    // finally, return the reports
+    return reports;
   
 
   } catch (error) {
@@ -66,14 +76,22 @@ async function createReport(reportFields) {
 
 
   try {
+    const { rows: [ report] } = await client.query(`
+    INSERT INTO reports (title, location, description, password, "isOpen") 
+    VALUES($1, $2, $3, $4, $5)
+    RETURNING *;
+  `, [title, location, description, password, isOpen]);
     // insert the correct fields into the reports table
     // remember to return the new row from the query
     
+    reportFields.password = null
 
     // remove the password from the returned row
     
 
     // return the new report
+
+    return report;
     
 
   } catch (error) {
@@ -214,3 +232,11 @@ async function createReportComment(reportId, commentFields) {
 }
 
 // export the client and all database functions below
+module.exports = {
+  client,
+  getOpenReports,
+  createReport,
+  _getReport,
+  closeReport,
+  createReportComment
+}
