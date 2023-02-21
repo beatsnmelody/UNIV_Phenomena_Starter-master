@@ -52,7 +52,7 @@ async function getOpenReports() {
  })
 
 
-    return reports;
+    return data;
   
 
   } catch (error) {
